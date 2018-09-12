@@ -1,98 +1,55 @@
 'use strict';
 (function () {
-    app.models.Login = {
+    app.models.SavedRecords= {
         init: function () {
-            app.models.Login = (function () {
+            app.models.SavedRecords = (function () {
                 return {
                     onShow: function (e) {
-                        var settings = JSON.parse(window.localStorage.getItem('AppSettings'));
-                        if (settings === null) {
-                            settings = {};
-                            settings.isSaveToAlbumSet = true;
-                            app.models.settings.viewModel.set('saveToPhotoAlbum', settings.isSaveToAlbumSet);
-                            window.localStorage.setItem("AppSettings", JSON.stringify(settings));
-                        }
-                        var appVersion = '';
-                        var CurrentVersion = window.localStorage.getItem("CurrentVersion");
-                        if (CurrentVersion != null) {
-                            appVersion = 'App Version: ' + CurrentVersion;
-                        }
-                        $('#appVersion').text(appVersion);
+
                     },
                     onHide: function () {
 
                     }
+
                 };
+
             })();
-            app.models.Login.LoginView = (function () {
-                var viewModel = kendo.observable({
-                    user: {
-                        userName: "",
-                        password: "",
-                        error: "",
-                        action: ''
-                    }
+            app.models.SavedRecords.SavedRecordsView=(function(){
+                var viewModel=kendo.observable({
+                    dataSource:[],
+                    hasItem:false,
+                    date:false,
+                    count:0,
+                    lang:app.strings.en
                 });
-                return {
-                    viewModel: viewModel,
-                    login: function () {
-                        var user = viewModel.get('user');
-                        //app.user.id = 1;
-                        //app.masterData.downloadStateMaster('N');
-                        //var APP_ID = app.config.appId;
-                        //var feedbackOptions = {
-                        //    enableShake: true
-                        //};
-                        //window.feedback.initialize(
-                        //   APP_ID,
-                        //   feedbackOptions
-                        // );
+                return{
+                    viewModel:viewModel,
+                    onShow:function(){
+                        app.loader.show("Wait..");
+                        app.db.transaction(function(tx){
+                            tx.executeSql('SELECT * FROM Rec '),
+                            function(tx,res){
+                                var list=[];
+                                if(res.rows.length>0){
+                                    viewModel.set('hasItem',true);
+                                    for(var i=0;i<res.rows.length;i++){
+                                        var item=res.rows.item(i);
+                                        list.push(item);
+                                    }
+                                }else{
+                                    viewModel.set('hasItem',false);
+                                }
+                                viewModel.set("dataSource",list);
+                                app.loader.hide();
+                            }
 
+                        }
                         
-                        app.loader.show(app.loaderMessage.login);
-                        if (user.userName.trim() == '' || user.password.trim() == '') {
-                            viewModel.set("user.error", "Both fields are required.");
-                            app.loader.hide();
-                            return;
-                            //app.mobileApp.navigate('views/home.html');
-                        }
-
-                        app.user.isLoggedIn = false;
-                        app.loader.show('Logging in offline...');
-                        if (user.userName=="vipul" && user.password=="pass"){
-                            app.user.isLoggedIn = true;
-                            app.models.Login.LoginView.saveLoginHistory();
-                            app.loader.hide();
-                            app.mobileApp.navigate('views/Home.html');
-                        }
-                        else 
-                        {
-                            app.loader.hide();
-                            alert("Wrong Credentials!!!!!!!");
-                            viewModel.set("user.password", "");
-                        }
-                                   
-            );
-}
                         
+                       ) }
+                }
+                
                        
-                   
-                    
-                  logout: function () {
-                        //app.config.isSaved = false;
-                        //app.user.isLoggedIn = false;
-                        //app.models.login.loginView.viewModel.set('user.action', 'logout');
-                        //app.models.login.loginView.saveLoginHistory();
-                        $("#app-drawer").data("kendoMobileDrawer").hide();
-                        setTimeout(function () {
-                            app.mobileApp.navigate('views/common/Login.html');
-                        }, 500);
-                    },
-                    deletedb: function () {
-                        app.deletedb.clean();
-                    }
-                };
+
+                            
             })();
-        }
-    };
-})();

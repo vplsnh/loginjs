@@ -1,4 +1,4 @@
-'use strict';
+use strict';
 (function () {
     app.models.SavedRecords= {
         init: function () {
@@ -13,7 +13,7 @@
 
                 };
 
-            })();
+     })();
             app.models.SavedRecords.SavedRecordsView=(function(){
                 var viewModel=kendo.observable({
                     dataSource:[],
@@ -21,35 +21,36 @@
                     date:false,
                     count:0,
                     lang:app.strings.en
-                });
-                return{
+            });
+           return{
                     viewModel:viewModel,
-                    onShow:function(){
+                 onShow:function(){
                         app.loader.show("Wait..");
-                        app.db.transaction(function(tx){
+                       app.db.transaction(function(tx){
                             tx.executeSql('SELECT * FROM Rec '),
                             function(tx,res){
                                 var list=[];
-                                if(res.rows.length>0){
+                        if(res.rows.length>0){
                                     viewModel.set('hasItem',true);
-                                    for(var i=0;i<res.rows.length;i++){
+                                for(var i=0;i<res.rows.length;i++){
                                         var item=res.rows.item(i);
                                         list.push(item);
-                                    }
-                                }else{
+                              }
+                          }
+                                   else{
                                     viewModel.set('hasItem',false);
-                                }
+                           }
                                 viewModel.set("dataSource",list);
                                 app.loader.hide();
-                            }
+                     }
 
-                        }
+                     }
                         
                         
-                       ) }
-                }
+                   / }
+         };
                 
-                       
+       })();      
 
-                            
-            })();d
+     };        
+      })();
